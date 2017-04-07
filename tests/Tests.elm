@@ -6,6 +6,7 @@ import Fuzz exposing (int, list)
 import String
 import Set exposing (Set)
 import Set.Extra
+import List.Extra
 
 
 all : Test
@@ -16,7 +17,11 @@ all =
                 \xs ->
                     Set.fromList xs
                         |> Set.Extra.concatMap doubleSet
-                        |> Expect.equal (Set.fromList <| List.concatMap doubleList xs)
+                        |> Expect.equal
+                            (xs
+                                |> List.concatMap doubleList
+                                |> Set.fromList
+                            )
             , fuzz int "left identity" <|
                 \x ->
                     Set.singleton x
@@ -40,6 +45,26 @@ all =
                                             |> Set.Extra.concatMap tripleSet
                                     )
                             )
+            ]
+        , describe "#subset"
+            [ fuzz2 (list int) (list int) "Same as List.Extra.isInfixOf" <|
+                \xs ys ->
+                    Set.fromList xs
+                        |> Set.Extra.subset (Set.fromList ys)
+                        |> Expect.equal
+                            (xs
+                                |> List.Extra.isInfixOf ys
+                            )
+            , test "checks if a set is a subset of another set" <|
+                \() ->
+                    Set.fromList [ 2, 4, 6 ]
+                        |> flip Set.Extra.subset (Set.fromList [ 1, 2, 3, 4, 5, 6, 7, 8 ])
+                        |> Expect.true "Expected the Set to be a subset"
+            , test "checks if a set isn't a subset of another set" <|
+                \() ->
+                    Set.fromList [ 2, 4, 10 ]
+                        |> flip Set.Extra.subset (Set.fromList [ 1, 2, 3, 4, 5, 6, 7, 8 ])
+                        |> Expect.false "Expected the Set to not be a subset"
             ]
         ]
 
