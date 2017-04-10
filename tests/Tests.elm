@@ -3,7 +3,6 @@ module Tests exposing (..)
 import Test exposing (..)
 import Expect
 import Fuzz exposing (int, list)
-import String
 import Set exposing (Set)
 import Set.Extra
 import List.Extra
@@ -65,6 +64,32 @@ all =
                     Set.fromList [ 2, 4, 10 ]
                         |> flip Set.Extra.subset (Set.fromList [ 1, 2, 3, 4, 5, 6, 7, 8 ])
                         |> Expect.false "Expected the Set to not be a subset"
+            ]
+        , describe "#toggle"
+            [ fuzz2 (list int) int "Removes an existing element" <|
+                \xs x ->
+                    let
+                        setWithoutX =
+                            Set.fromList (xs)
+                                |> Set.remove x
+
+                        setWithX =
+                            Set.insert x setWithoutX
+                    in
+                        Set.Extra.toggle x setWithoutX
+                            |> Expect.equalSets setWithX
+            , fuzz2 (list int) int "Adds an new element" <|
+                \xs x ->
+                    let
+                        setWithoutX =
+                            Set.fromList (xs)
+                                |> Set.remove x
+
+                        setWithX =
+                            Set.insert x setWithoutX
+                    in
+                        Set.Extra.toggle x setWithX
+                            |> Expect.equalSets setWithoutX
             ]
         ]
 
