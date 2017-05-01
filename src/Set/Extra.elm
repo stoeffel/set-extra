@@ -1,8 +1,14 @@
-module Set.Extra exposing (concatMap, subset, toggle)
+module Set.Extra
+    exposing
+        ( concatMap
+        , filterMap
+        , subset
+        , toggle
+        )
 
 {-| Convenience functions for working with Set.
 
-@docs concatMap, subset, toggle
+@docs concatMap, filterMap, subset, toggle
 -}
 
 import Set exposing (Set)
@@ -47,3 +53,24 @@ toggle elem set =
         Set.remove elem set
     else
         Set.insert elem set
+
+
+{-| Apply a function that may succeed to all values in the set, but only keep the successes.
+
+    Set.fromList ["1", "2", "a", "3"]
+        |> Set.Extra.filterMap (String.toFloat >> Result.toMaybe)
+    -- { 1, 2, 3 }
+-}
+filterMap : (comparable -> Maybe comparable2) -> Set comparable -> Set comparable2
+filterMap f xs =
+    Set.fromList <| Set.foldr (maybeCons f) [] xs
+
+
+maybeCons : (comparable -> Maybe comparable2) -> comparable -> List comparable2 -> List comparable2
+maybeCons f mx xs =
+    case f mx of
+        Just x ->
+            x :: xs
+
+        Nothing ->
+            xs

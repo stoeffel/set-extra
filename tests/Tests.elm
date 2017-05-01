@@ -2,7 +2,7 @@ module Tests exposing (..)
 
 import Test exposing (..)
 import Expect
-import Fuzz exposing (int, list)
+import Fuzz exposing (int, list, string)
 import Set exposing (Set)
 import Set.Extra
 import List.Extra
@@ -90,6 +90,21 @@ all =
                     in
                         Set.Extra.toggle x setWithX
                             |> Expect.equalSets setWithoutX
+            ]
+        , describe "#filterMap"
+            [ test "Applies a function that may succeed to all values in the list, but only keep the successes." <|
+                \() ->
+                    Set.fromList [ "1", "2", "3", "hello", "4", "world" ]
+                        |> Set.Extra.filterMap (String.toFloat >> Result.toMaybe)
+                        |> Expect.equal (Set.fromList [ 1, 2, 3, 4 ])
+            , fuzz (list string) "should work like (List.filterMap >> Set.fromList)" <|
+                \xs ->
+                    Set.fromList xs
+                        |> Set.Extra.filterMap (String.toFloat >> Result.toMaybe)
+                        |> Expect.equal
+                            (List.filterMap (String.toFloat >> Result.toMaybe) xs
+                                |> Set.fromList
+                            )
             ]
         ]
 
