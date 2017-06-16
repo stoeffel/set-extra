@@ -1,11 +1,11 @@
 module Tests exposing (..)
 
-import Test exposing (..)
 import Expect
 import Fuzz exposing (int, list, string)
+import List.Extra
 import Set exposing (Set)
 import Set.Extra
-import List.Extra
+import Test exposing (..)
 
 
 all : Test
@@ -49,11 +49,9 @@ all =
             [ fuzz2 (list int) (list int) "Same as List.Extra.isInfixOf" <|
                 \xs ys ->
                     Set.fromList xs
-                        |> Set.Extra.subset (Set.fromList ys)
+                        |> flip Set.Extra.subset (Set.fromList ys)
                         |> Expect.equal
-                            (xs
-                                |> List.Extra.isInfixOf ys
-                            )
+                            (List.all (flip List.member ys) xs)
             , test "checks if a set is a subset of another set" <|
                 \() ->
                     Set.fromList [ 2, 4, 6 ]
@@ -70,26 +68,26 @@ all =
                 \xs x ->
                     let
                         setWithoutX =
-                            Set.fromList (xs)
+                            Set.fromList xs
                                 |> Set.remove x
 
                         setWithX =
                             Set.insert x setWithoutX
                     in
-                        Set.Extra.toggle x setWithoutX
-                            |> Expect.equalSets setWithX
+                    Set.Extra.toggle x setWithoutX
+                        |> Expect.equalSets setWithX
             , fuzz2 (list int) int "Adds an new element" <|
                 \xs x ->
                     let
                         setWithoutX =
-                            Set.fromList (xs)
+                            Set.fromList xs
                                 |> Set.remove x
 
                         setWithX =
                             Set.insert x setWithoutX
                     in
-                        Set.Extra.toggle x setWithX
-                            |> Expect.equalSets setWithoutX
+                    Set.Extra.toggle x setWithX
+                        |> Expect.equalSets setWithoutX
             ]
         , describe "#filterMap"
             [ test "Applies a function that may succeed to all values in the list, but only keep the successes." <|

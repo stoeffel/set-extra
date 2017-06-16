@@ -11,7 +11,7 @@ module Set.Extra
 @docs concatMap, filterMap, subset, toggle
 
     -- This module is used in the examples
-    import Set
+    import Set exposing (Set)
 
 -}
 
@@ -20,14 +20,26 @@ import Set exposing (Set)
 
 {-| Map a given function onto a set and union the resulting set.
 
-    neighbors :: (Int, Int) -> Set (Int, Int)
+    neighbors : (Int, Int) -> Set (Int, Int)
     neighbors (x, y) =
         Set.fromList
-          [ (x - 1, y - 1), (x, y - 1), (x + 1, y - 1)
-          , (x - 1, y),                 (x + 1, y)
-          , (x - 1, y + 1), (x, y + 1), (x + 1, y + 1)
-          ]
+            [ (x - 1, y - 1), (x, y - 1), (x + 1, y - 1)
+            , (x - 1, y),                 (x + 1, y)
+            , (x - 1, y + 1), (x, y + 1), (x + 1, y + 1)
+            ]
+
+    setOfPoints : Set (Int, Int)
+    setOfPoints =
+        Set.fromList [(1,1), (0,0)]
+
     Set.Extra.concatMap neighbors setOfPoints
+    --> Set.fromList
+    -->     [ (-1,-1), (-1,0), (-1,1)
+    -->     , (0,-1), (0,0), (0,1)
+    -->     , (0,2), (1,-1), (1,0)
+    -->     , (1,1), (1,2), (2,0)
+    -->     , (2,1), (2,2)
+    -->     ]
 
 -}
 concatMap : (comparable -> Set comparable2) -> Set comparable -> Set comparable2
@@ -37,7 +49,9 @@ concatMap f s =
 
 {-| Check if a Set is a subset of another Set.
 
-    Set.Extra.subset (Set.fromList [1,2,3]) (Set.fromList [1,2,3,4,5])
+    Set.Extra.subset
+        (Set.fromList [1,2,3])
+        (Set.fromList [1,2,3,4,5])
     --> True
 
 -}
@@ -50,9 +64,11 @@ subset s1 s2 =
 
 {-| If the set does not contain the element, add it. If it does contain the element, remove it.
 
-    Set.Extra.toggle 1 (Set.fromList [1,2,3]) --> Set.fromList [2, 3]
+    Set.Extra.toggle 1 (Set.fromList [1,2,3])
+    --> Set.fromList [2, 3]
 
-    Set.Extra.toggle 1 (Set.fromList [2,3])   --> Set.fromList [1, 2, 3]
+    Set.Extra.toggle 1 (Set.fromList [2,3])
+    --> Set.fromList [1, 2, 3]
 
 -}
 toggle : comparable -> Set comparable -> Set comparable
@@ -65,8 +81,14 @@ toggle elem set =
 
 {-| Apply a function that may succeed to all values in the set, but only keep the successes.
 
+    stringToFloat : String -> Maybe Float
+    stringToFloat str =
+        str
+            |> String.toFloat
+            |> Result.toMaybe
+
     Set.fromList ["1", "2", "a", "3"]
-        |> Set.Extra.filterMap (String.toFloat >> Result.toMaybe)
+        |> Set.Extra.filterMap stringToFloat
     --> Set.fromList [1, 2, 3]
 
 -}
