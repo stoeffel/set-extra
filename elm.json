@@ -1,0 +1,20 @@
+{
+    "type": "package",
+    "name": "stoeffel/set-extra",
+    "summary": "Convenience functions for working with Set.",
+    "license": "BSD-3-Clause",
+    "version": "1.2.2",
+    "exposed-modules": [
+        "Set.Extra"
+    ],
+    "elm-version": "0.19.0 <= v < 0.20.0",
+    "dependencies": {
+        "elm/core": "1.0.0 <= v < 2.0.0",
+        "elm/html": "1.0.0 <= v < 2.0.0"
+    },
+    "test-dependencies": {
+        "elm-community/basics-extra": "4.0.0 <= v < 5.0.0",
+        "elm-community/list-extra": "8.0.0 <= v < 9.0.0",
+        "elm-explorations/test": "1.0.0 <= v < 2.0.0"
+    }
+}
