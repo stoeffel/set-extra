@@ -1,17 +1,8 @@
-module Set.Extra
-    exposing
-        ( concatMap
-        , filterMap
-        , subset
-        , toggle
-        )
+module Set.Extra exposing (concatMap, filterMap, subset, toggle)
 
 {-| Convenience functions for working with Set.
 
 @docs concatMap, filterMap, subset, toggle
-
-    -- This module is used in the examples
-    import Set exposing (Set)
 
 -}
 
@@ -19,6 +10,8 @@ import Set exposing (Set)
 
 
 {-| Map a given function onto a set and union the resulting set.
+
+    import Set exposing (Set)
 
     neighbors : (Int, Int) -> Set (Int, Int)
     neighbors (x, y) =
@@ -49,6 +42,8 @@ concatMap f s =
 
 {-| Check if a Set is a subset of another Set.
 
+    import Set exposing (Set)
+
     Set.Extra.subset
         (Set.fromList [1,2,3])
         (Set.fromList [1,2,3,4,5])
@@ -64,6 +59,8 @@ subset s1 s2 =
 
 {-| If the set does not contain the element, add it. If it does contain the element, remove it.
 
+    import Set exposing (Set)
+
     Set.Extra.toggle 1 (Set.fromList [1,2,3])
     --> Set.fromList [2, 3]
 
@@ -75,20 +72,17 @@ toggle : comparable -> Set comparable -> Set comparable
 toggle elem set =
     if Set.member elem set then
         Set.remove elem set
+
     else
         Set.insert elem set
 
 
 {-| Apply a function that may succeed to all values in the set, but only keep the successes.
 
-    stringToFloat : String -> Maybe Float
-    stringToFloat str =
-        str
-            |> String.toFloat
-            |> Result.toMaybe
+    import Set exposing (Set)
 
     Set.fromList ["1", "2", "a", "3"]
-        |> Set.Extra.filterMap stringToFloat
+        |> Set.Extra.filterMap String.toFloat
     --> Set.fromList [1, 2, 3]
 
 -}

@@ -1,5 +1,6 @@
-module Tests exposing (..)
+module Tests exposing (all, doubleList, doubleSet, tripleSet)
 
+import Basics.Extra exposing (flip)
 import Expect
 import Fuzz exposing (int, list, string)
 import List.Extra
@@ -93,14 +94,14 @@ all =
             [ test "Applies a function that may succeed to all values in the list, but only keep the successes." <|
                 \() ->
                     Set.fromList [ "1", "2", "3", "hello", "4", "world" ]
-                        |> Set.Extra.filterMap (String.toFloat >> Result.toMaybe)
+                        |> Set.Extra.filterMap String.toFloat
                         |> Expect.equal (Set.fromList [ 1, 2, 3, 4 ])
             , fuzz (list string) "should work like (List.filterMap >> Set.fromList)" <|
                 \xs ->
                     Set.fromList xs
-                        |> Set.Extra.filterMap (String.toFloat >> Result.toMaybe)
+                        |> Set.Extra.filterMap String.toFloat
                         |> Expect.equal
-                            (List.filterMap (String.toFloat >> Result.toMaybe) xs
+                            (List.filterMap String.toFloat xs
                                 |> Set.fromList
                             )
             ]
